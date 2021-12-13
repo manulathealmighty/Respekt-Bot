@@ -128,15 +128,17 @@ def reply(bot: tg.Bot, update: tg.Update):
         # chat id is user_id when the user is talking 1 on 1 with the bot
         if(replying_user.id == update.message.reply_to_message.from_user.id and chat_id != str(reply_user.id)):
             witty_responses = [
-                " how could you +1 yourself?",
-                " what do you think you're doing?",
-                " is your post really worth +1ing yourself?",
-                " you won't get any goodie points for that",
-                " try +1ing someone else instead of yourself!",
-                " who are you to +1 yourself?",
-                " beware the Jabberwocky",
-                " have a 🍪!",
-                " you must give praise. May he 🍔melt🍔! "]
+                " How could you +1 yourself?",
+                " What do you think you're doing?",
+                " Is your post really worth +1ing yourself?",
+                " You won't get any goodie points for that",
+                " Try +1ing someone else instead of yourself!",
+                " Who are you to +1 yourself?",
+                " Beware the Jabberwocky",
+                " Have a 🍪!",
+                " You must give praise. May he 🍔melt🍔! "
+                " Nigga, u for real??" 
+                " Me not appreciate that!!]
             response = random.choice(witty_responses)
             message = f"{replying_user.first_name}{response}"
             bot.send_message(chat_id=chat_id, text=message)
@@ -205,17 +207,17 @@ def show_user_stats(bot, update, args):
     message = None
     try:
         result = get_user_stats(username, chat_id, conn)
-        message = """Username: {:s} Karma: {:d}
-        Karma given out stats:
-        Upvotes, Downvotes, Total Votes, Net Karma
+        message = """Username: {:s} �Respekt: {:d}
+        Respekt given out stats:
+        Upvotes, Downvotes, Total Votes, Net Respekt
         {:d}, {:d}, {:d}, {:d}"""
         message = message.format(
             result['username'],
-            result['karma'],
+            result['respekt'],
             result['upvotes_given'],
             result['downvotes_given'],
             result['total_votes_given'],
-            result['net_karma_given'])
+            result['net_respekt_given'])
     except UserNotFound as _:
         message = f"No user with username: {username}"
 
@@ -234,15 +236,15 @@ def use_command(command: str, user: User, chat_id: str, arguments=""):
 
 
 @types
-def show_karma(bot, update, args):
+def show_respekt(bot, update, args):
     use_command(
-        'showkarma', user_from_tg_user(
+        'showrespekt', user_from_tg_user(
             update.message.from_user), str(
             update.message.chat_id))
     logger.debug("Chat id: " + str(update.message.chat_id))
 
     # returns username, first_name, karma
-    rows: List[Tuple[str, str, int]] = get_karma_for_users_in_chat(
+    rows: List[Tuple[str, str, int]] = get_respekt_for_users_in_chat(
         str(update.message.chat_id), conn)
     rows.sort(key=lambda user: user[2], reverse=True)
     # use firstname if username not set
@@ -268,9 +270,9 @@ def show_karma(bot, update, args):
 
     if message != '':
         # TODO: figure out a better way to add this heading
-        message = "Username: Karma\n" + message
+        message = "Username: Respekt\n" + message
     else:
-        message = "Oops I didn't find any karma"
+        message = "Oops I didn't find any respekt"
 
     bot.send_message(chat_id=update.message.chat_id, text=message)
 
@@ -286,8 +288,8 @@ def show_chat_info(bot, update, args):
     if title is None:
         title = "No Title"
     result = get_chat_info(chat_id, conn)
-    message = "Chat: {:s}.\n Number of Users with Karma: {:d}\n Total Reply Count: {:d}".format(
-        title, result['user_with_karma_count'], result['reply_count'])
+    message = "Chat: {:s}.\n Number of Users with Respekt: {:d}\n Total Reply Count: {:d}".format(
+        title, result['user_with_respekt_count'], result['reply_count'])
     bot.send_message(chat_id=update.message.chat_id, text=message)
 
 
@@ -297,7 +299,7 @@ def am_I_admin(bot, update, args):
     bot.send_message(chat_id=update.message.chat_id, text=message)
 
 
-def show_karma_personally(bot, update, args):
+def show_respekt_personally(bot, update, args):
     # TODO:check if this is a 1 on 1 message handler
     # offer choice to user of which chat they want to see the karma totals of
     # user clicks on button to choose chat (similar to BotFather) then bot
