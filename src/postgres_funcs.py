@@ -38,19 +38,19 @@ def get_user_stats(username: str, chat_id: str, conn) -> Dict:
     if user is None:
         raise UserNotFound()
     user_has_reacts = did_user_react_to_messages(username, conn)
-    karma = get_karma_for_user_in_chat(username, chat_id, conn)
-    if karma is None:
-        karma = 0
+    respekt = get_respekt_for_user_in_chat(username, chat_id, conn)
+    if respekt is None:
+        respekt = 0
 
     output_dict = None
     if not user_has_reacts:
         output_dict = {
             'username': username,
-            'karma': karma,
+            'Respekt': respekt,
             'upvotes_given': 0,
             'downvotes_given': 0,
             'total_votes_given': 0,
-            'net_karma_given': 0}
+            'net_respekt_given': 0}
     else:
         # how many reacts given out by user
         how_many_user_reacted_to_stats = """select react_score, count(react_score)from
@@ -60,8 +60,8 @@ def get_user_stats(username: str, chat_id: str, conn) -> Dict:
             where tm.chat_id=%s group by react_score;"""
         # TODO: implement how many reacts recieved by user
         how_many_reacted_to_user_stats = """"""
-        negative_karma_given = 0
-        positive_karma_given = 0
+        negative_respekt_given = 0
+        positive_respekt_given = 0
         result = None
         with conn:
             with conn.cursor() as crs:
@@ -80,11 +80,11 @@ def get_user_stats(username: str, chat_id: str, conn) -> Dict:
         # TODO: make this output type a class instead to bundle this info
         output_dict = {
             'username': username,
-            'karma': karma,
-            'upvotes_given': positive_karma_given,
-            'downvotes_given': negative_karma_given,
-            'total_votes_given': positive_karma_given + negative_karma_given,
-            'net_karma_given': positive_karma_given - negative_karma_given}
+            'Respekt': respekt,
+            'upvotes_given': positive_respekt_given,
+            'downvotes_given': negative_respekt_given,
+            'total_votes_given': positive_respekt_given + negative_respekt_given,
+            'net_respekt_given': positive_respekt_given - negative_respekt_given}
     return output_dict
 
 
@@ -92,7 +92,7 @@ def get_chat_info(chat_id: str, conn) -> Dict:
     count_reacts_cmd = """select count(tm.message_id) from user_reacted_to_message urtm
 left join telegram_message tm ON tm.message_id = urtm.message_id
 where tm.chat_id=%s"""
-    select_user_with_karma_count = """
+    select_user_with_respekt_count = """
     select count(*) from telegram_chat tc
     left join user_in_chat uic on uic.chat_id = tc.chat_id
     where tc.chat_id=%s
@@ -109,14 +109,14 @@ where tm.chat_id=%s"""
             else:
                 reply_count = 0
 
-            crs.execute(select_user_with_karma_count, [chat_id])
+            crs.execute(select_user_with_respekt_count, [chat_id])
             result = crs.fetchone()
             if result is not None:
-                user_with_karma_count = result[0]
+                user_with_respekt_count = result[0]
             else:
-                user_with_karma_count = 0
+                user_with_respekt_count = 0
             return {'reply_count': reply_count,
-                    'user_with_karma_count': user_with_karma_count}
+                    'user_with_respekt_count': user_with_respekt_count}
 
 
 # TODO: use user_id instead of username
@@ -196,7 +196,7 @@ def save_or_create_user_in_chat(
         user: User,
         chat_id: str,
         conn,
-        change_karma=0) -> User_in_chat:
+        change_respekt=0) -> User_in_chat:
     with conn:
         with conn.cursor() as crs:  # I would love type hints here but psycopg2.cursor isn't a defined class
             # TODO: instead of select first, do insert and then trap exception
@@ -206,22 +206,22 @@ def save_or_create_user_in_chat(
 
             result = crs.fetchone()
 
-            insertcmd_karma = """INSERT into user_in_chat
-                (user_id, chat_id, karma) VALUES (%s,%s,%s)
-                ON CONFLICT (user_id,chat_id) DO UPDATE SET karma = user_in_chat.karma + %s
-                RETURNING karma
+            insertcmd_respekt = """INSERT into user_in_chat
+                (user_id, chat_id, respekt) VALUES (%s,%s,%s)
+                ON CONFLICT (user_id,chat_id) DO UPDATE SET respekt = user_in_chat.karma + %s
+                RETURNING respekt
                 """
 
             # TODO: used named parameters instead of %s to not have to repeat
             # these params
             crs.execute(
-                insertcmd_karma, [
-                    user.get_user_id(), chat_id, change_karma, change_karma])
+                insertcmd_respekt, [
+                    user.get_user_id(), chat_id, change_respekt, change_respekt])
 
             row = crs.fetchone()
             conn.commit()
-            karma = row[0]
-            return User_in_chat(user.id, chat_id, karma)
+            respekt = row[0]
+            return User_in_chat(user.id, chat_id, respekt)
 
 # message tg.Message
 # reply_message comes after and is the reply
@@ -233,7 +233,7 @@ def user_reply_to_message(
         chat: Telegram_chat,
         original_message: Telegram_message,
         reply_message: Telegram_message,
-        karma: int,
+        respekt: int,
         conn):
     user: User = save_or_create_user(user, conn)
     reply_to_user: User = save_or_create_user(reply_to_user, conn)
@@ -268,13 +268,13 @@ def user_reply_to_message(
                 user_previous_react = result[0]
 
     # TODO: add gaurd for karma == 1 or == -1 up higher
-    if user_previous_react is None or user_previous_react != karma:
-        if(karma == 1 or karma == -1):
+    if user_previous_react is None or user_previous_react != respekt:
+        if(respekt == 1 or respekt == -1):
             save_or_create_user_in_chat(
-                reply_to_user, chat.chat_id, conn, change_karma=karma)
+                reply_to_user, chat.chat_id, conn, change_respekt=respekt)
         else:
             logging.info(
-                f"invalid karma: {karma} passed to user_reply_to_message")
+                f"invalid respekt: {karma} passed to user_reply_to_message")
         with conn:
             with conn.cursor() as crs:
                 args_reply_message = [
@@ -297,11 +297,11 @@ def user_reply_to_message(
                 crs.execute(inserturtm, argsurtm)
 
 
-def get_karma_for_user_in_chat(
+def get_respekt_for_user_in_chat(
         username: str,
         chat_id: str,
         conn) -> Optional[int]:
-    cmd = """select karma from telegram_user tu
+    cmd = """select respekt from telegram_user tu
         LEFT JOIN user_in_chat uic ON uic.user_id=tu.user_id
         where tu.username=%s AND uic.chat_id=%s"""
     with conn:
@@ -315,9 +315,9 @@ def get_karma_for_user_in_chat(
             return result
 
 
-def get_karma_for_users_in_chat(
+def get_respekt_for_users_in_chat(
         chat_id: str, conn) -> List[Tuple[str, str, int]]:
-    cmd = """select username, first_name, karma from telegram_user tu
+    cmd = """select username, first_name, respekt from telegram_user tu
         LEFT JOIN user_in_chat uic ON uic.user_id=tu.user_id
         where uic.chat_id=%s;"""
     with conn:
