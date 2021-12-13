@@ -1,5 +1,8 @@
+#Idea credits :- Isuka
+#Source code dev :- Manula (@ucant_surpassmebruh)
+
 # Respekt Bot
-The goal is to make a bot which is able to track user karma 
+The goal is to make a bot which is able to track user respekt 
 
 The architecture uses a telegram bot wrapper 'python-telegram-bot' which stores its data in a locally hosted Postgresql database.
 Docker-compose is used to manage the project and push incremental builds to testing and production.
