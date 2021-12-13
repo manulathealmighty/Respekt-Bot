@@ -19,7 +19,7 @@ class User(object):
     A representation of a telegram user
     """
     id: int
-    __karma: int
+    __respekt: int
     first_name: str
     last_name: Optional[str]
     username: Optional[str]
@@ -30,7 +30,7 @@ class User(object):
             username: str,
             first_name: str,
             last_name: str):
-        self.__karma = 0
+        self.__respekt = 0
         self.id = id
         self.username = username
         self.first_name = first_name
@@ -44,17 +44,17 @@ class User(object):
         self.last_name : Optional[str] = user.last_name
         self.username : Optional[str] = user.username """
 
-    def get_karma(self):
-        return self.__karma
+    def get_respekt(self):
+        return self.__respekt
 
     def get_username(self):
         return self.username
 
-    def give_karma(self):
-        self.__karma = self.__karma + 1
+    def give_respekt(self):
+        self.__respekt = self.__respekt + 1
 
     def remove_karma(self):
-        self.__karma = self.__karma - 1
+        self.__respekt = self.__respekt - 1
 
     def get_user_id(self):
         return self.id
@@ -68,22 +68,22 @@ class User(object):
     def __str__(self):
         if self.username is not None:
             message = "Username: " + self.username + \
-                " karma: " + str(self.get_karma())
+                " respekt: " + str(self.get_respekt())
             # clean this logic up
             message = message + " first: " + \
                 str(self.get_first_name()) + " last: " + str(self.get_last_name())
             return message
         else:
             return "First Name: " + self.first_name + \
-                " karma: " + str(self.get_karma())
+                " respekt: " + str(self.get_respekt())
 
 
 class User_in_chat(object):
     user_id: int
     chat_id: int
-    karma: int
+    respekt: int
 
-    def __init__(self, user_id: int, chat_id: int, karma: int):
+    def __init__(self, user_id: int, chat_id: int, respekt: int):
         self.user_id = user_id
         self.chat_id = chat_id
         self.karma = karma
