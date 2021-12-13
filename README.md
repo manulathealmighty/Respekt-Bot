@@ -1,13 +1,13 @@
-# Karma Bot
+# Respekt Bot
 The goal is to make a bot which is able to track user karma 
 
 The architecture uses a telegram bot wrapper 'python-telegram-bot' which stores its data in a locally hosted Postgresql database.
 Docker-compose is used to manage the project and push incremental builds to testing and production.
 
 ## Actions
-The Karma bot will track each user in the telegram group it is a member of and keep track of a score for that individual. 
+The Respekt bot will track each user in the telegram group it is a member of and keep track of a score for that individual. 
 Reply to a user's post with a message that starts with "+1" or "-1" to give or subtract from the global score of that user.
-Use the command /showkarma to view show the karma for all users. Use the command,
+Use the command /showrsepekt to view show the respekt for all users. Use the command,
 ```
 /userinfo [username]
 ```
@@ -54,13 +54,13 @@ psql -h localhost -p 5432 karmabot test_user
 
 ### Server (python):
 *Features*
-- [ ] reply to a message with /showpostkarma (or similar) to do a print out of -the karma of a post
-- [ ] Create icon for the karmabot bot and add it through the BotFather
+- [ ] reply to a message with /showpostrespekt (or similar) to do a print out of -the respekt of a post
+- [ ] Create icon for the respekt bot and add it through the BotFather
 - [ ] Allow you to +1 yourself only in your chat 1 on 1 with the bot. Useful for testing.
 - [ ] Create integrated testing environment (possibly using telegram client api?) for making sure the bot works
 - [ ] Offer support for users to set a personal flag associated with themselves.
 - [ ] Have /userinfo show the rank of a user relative to others
-- [ ] Show deltas on /showkarma from most recent /showkarma
+- [ ] Show deltas on /showrespekt from most recent /showkarma
 - [ ] Create decorator to update chatname, username, etc
 - [ ] Add firstname and lastname (maybe even id?) to /userinfo 
 - [ ] Create support for testing performance of calls (perhaps using decorators)
@@ -80,13 +80,13 @@ psql -h localhost -p 5432 karmabot test_user
 
 ## DONE: These tasks are finished
 - [x] Make a user unable to +1 or -1 themselves
-- [x] Don't show the bot on /showkarma
+- [x] Don't show the bot on /showrespekt
 - [x] Seperate karma by chatid so bot can be run for seperate chats (added in database integration)
 - [x] Add table to track when users do /showkarma (command_used added )
 - [x] Add time field to telegram_message (also time field added to command_used)
-- [x] Fix bug: currently users without usernames cannot receive karma. (users get karma but /showkarma still does not display properly)
+- [x] Fix bug: currently users without usernames cannot receive respekt. (users get respekt but /showrespekt still does not display properly)
 - [x] Handle bot tokens being passed in as environment variables (including with docker-compose support)
-- [x] Fix users without username being reported as "NaN"  or "None" (in showkarma or userinfo)
+- [x] Fix users without username being reported as "NaN"  or "None" (in showrespekt or userinfo)
 - [x] Use ON CONFLICT UPDATE SET to not allow users to +1 a single post multiple times
 - [x] add /plus1 and /minus1 (or similar) commands as alternative to +1 or -1 for faster mobile usage
 - [x] Create database indexs for performance
